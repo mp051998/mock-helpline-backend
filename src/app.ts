@@ -1,4 +1,8 @@
+import { CasesRoute } from './routes/user/cases';
+import { Db } from 'mongodb';
 import { configDotenv } from 'dotenv';
+import { connectToDB } from './services/mongodb';
+import cors from 'cors';
 import express from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -17,7 +21,17 @@ const port = process.env.PORT || 3000;
 // Allow JSON parsing
 app.use(express.json());
 
-// Register the routes
+// Allow CORS
+app.use(cors());
+
+let db: Db;
+(async () => {
+  db = await connectToDB(process.env.MONGODB_CONNECTION_URI, process.env.MONGODB_DATABASE_NAME);
+})();
+export { db };
+
+// Register the routes here
+new CasesRoute(app);
 
 // Set up swagger
 const swaggerOptions = {
